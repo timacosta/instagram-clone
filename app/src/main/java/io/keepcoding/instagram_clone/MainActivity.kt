@@ -14,8 +14,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = GalleryRecyclerAdapter()
         binding.galleryRecyclerView.adapter = adapter
 
-
-        adapter.imageList = listOf(Image("url"))
+        adapter.imageList = listOf(Image("https://images.theconversation.com/files/290710/original/file-20190903-175663-lqb3z6.jpg"))
 
 
     }
