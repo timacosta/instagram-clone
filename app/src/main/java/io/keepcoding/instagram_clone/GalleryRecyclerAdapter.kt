@@ -7,10 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import io.keepcoding.instagram_clone.databinding.GalleryRowBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -36,7 +33,7 @@ data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewH
 
     fun bind(image: Image) {
 
-        GlobalScope.launch(Dispatchers.IO) {
+        GlobalScope.launch {
             val bitmap = downloadImage(image)
             withContext(Dispatchers.Main) {
                 binding.imageView.setImageBitmap(bitmap)
@@ -45,6 +42,8 @@ data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewH
                 binding.imageView.setImageBitmap(bitmap)
             }*/
         }
+
+        CoroutineScope(Dispatchers.Main).launch {  }
     }
 
     private suspend fun downloadImage(image: Image): Bitmap {
