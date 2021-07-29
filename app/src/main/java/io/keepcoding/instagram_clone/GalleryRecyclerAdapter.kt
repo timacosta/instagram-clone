@@ -15,6 +15,10 @@ import okhttp3.Response
 class GalleryRecyclerAdapter: RecyclerView.Adapter<GalleryViewHolder>() {
 
     var imageList : List<Image> = emptyList()
+    set(value) {
+        field = value
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder =
         GalleryRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)

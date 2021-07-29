@@ -9,6 +9,7 @@ import io.keepcoding.instagram_clone.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttp
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -37,8 +38,21 @@ class MainActivity : AppCompatActivity() {
                 .build()
 
             val api: ImgurApi = retrofit.create(ImgurApi::class.java)
-            val response = api.getHotGallery()
-            Log.d("Tag","$response")
+            val gallery = api.getHotGallery()
+            Log.d("Tag","$gallery")
+
+           val images = gallery.data.mapNotNull { image ->
+            val link = image.images?.first()?.link
+            if(link?.contains(".jpg") == true ||
+                link?.contains("png") == true)
+                Image(link)
+            else
+                null
+            }
+
+            withContext(Dispatchers.Main) {
+                adapter.imageList = images
+            }
         }
 
 
