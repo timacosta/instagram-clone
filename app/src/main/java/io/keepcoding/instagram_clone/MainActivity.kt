@@ -3,6 +3,7 @@ package io.keepcoding.instagram_clone
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.lifecycle.ViewModelProvider
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.keepcoding.instagram_clone.databinding.ActivityMainBinding
@@ -23,36 +24,14 @@ class MainActivity : AppCompatActivity() {
             setContentView(it.root)
         }
 
+        val viewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
+
         val adapter = GalleryRecyclerAdapter()
         binding.galleryRecyclerView.adapter = adapter
 
-        adapter.imageList = listOf(Image("https://images.theconversation.com/files/290710/original/file-20190903-175663-lqb3z6.jpg"))
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val client = OkHttpClient().newBuilder().build()
-            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.imgur.com/3/")
-                .client(client)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-
-            val api: ImgurApi = retrofit.create(ImgurApi::class.java)
-            val gallery = api.getHotGallery()
-            Log.d("Tag","$gallery")
-
-           val images = gallery.data.mapNotNull { image ->
-            val link = image.images?.first()?.link
-            if(link?.contains(".jpg") == true ||
-                link?.contains("png") == true)
-                Image(link)
-            else
-                null
-            }
-
-            withContext(Dispatchers.Main) {
-                adapter.imageList = images
-            }
+        viewModel.getImages()
+        viewModel.state.observe(this) { state ->
+            adapter.imageList = state.images
         }
 
 
