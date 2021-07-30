@@ -2,11 +2,21 @@ package io.keepcoding.instagram_clone
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import io.keepcoding.instagram_clone.databinding.ActivityMainBinding
+import okhttp3.OkHttpClient
+import org.kodein.di.DI
+import org.kodein.di.DIAware
+import org.kodein.di.android.di
+import org.kodein.di.instance
+import retrofit2.Retrofit
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), DIAware {
+
+    override val di: DI by di()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater).also {
@@ -31,6 +41,8 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
+        val client = di.instance<Retrofit>()
+        Log.e("DEBUG", client.toString())
 
     }
 }
