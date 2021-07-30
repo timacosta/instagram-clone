@@ -11,10 +11,9 @@ import org.kodein.di.singleton
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-object NetworkDIModule {
-    fun create() = DI.Module(name = this::class.simpleName!!, allowSilentOverride = false, init = builder)
-
-    private val builder: DI.Builder.() -> Unit = {
+object NetworkDIModule: DIBaseModule("NetworkDIModule") {
+    
+    override val builder: DI.Builder.() -> Unit = {
         bind<OkHttpClient>() with singleton {
             Log.e("DEBUG", "OkHttpClient")
             OkHttpClient().newBuilder().build()
