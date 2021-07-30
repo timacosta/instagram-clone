@@ -1,6 +1,7 @@
 package io.keepcoding.instagram_clone
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 class GalleryViewModel: ViewModel() {
 
-    val state: MutableLiveData<GalleryState> = MutableLiveData()
+    val stateMLD: MutableLiveData<GalleryState> = MutableLiveData()
+    val state: LiveData<GalleryState> get() = stateMLD
+
 
     private val api: ImgurApi
     private var requestJob: Job? = null
@@ -62,7 +65,7 @@ class GalleryViewModel: ViewModel() {
             Image(link)
         }
 
-        state.postValue(GalleryState(images))
+        stateMLD.postValue(GalleryState(images))
     }
 
     data class GalleryState(val images: List<Image>)
