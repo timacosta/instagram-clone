@@ -33,19 +33,10 @@ class GalleryViewModel: ViewModel() {
     fun getHotImages() {
         requestJob?.cancel()
         requestJob = viewModelScope.launch(Dispatchers.IO) {
-            delay(2000)
             val gallery = api.getHotGallery()
             Log.d("Tag","$gallery")
 
-            val images = gallery.data.mapNotNull { image ->
-                image.images?.first()?.link
-            }.filter { link ->
-                link.contains(".jpg") || link.contains(".png")
-            }.map { link ->
-                Image(link)
-            }
-
-            state.postValue(GalleryState(images))
+            parseGallery(gallery)
 
         }
     }
@@ -57,17 +48,21 @@ class GalleryViewModel: ViewModel() {
             val gallery = api.getTopGallery()
             Log.d("Tag","$gallery")
 
-            val images = gallery.data.mapNotNull { image ->
-                image.images?.first()?.link
-            }.filter { link ->
-                link.contains(".jpg") || link.contains(".png")
-            }.map { link ->
-                Image(link)
-            }
-
-            state.postValue(GalleryState(images))
+            parseGallery(gallery)
 
         }
+    }
+
+    private fun parseGallery(gallery: Gallery) {
+        val images = gallery.data.mapNotNull { image ->
+            image.images?.first()?.link
+        }.filter { link ->
+            link.contains(".jpg") || link.contains(".png")
+        }.map { link ->
+            Image(link)
+        }
+
+        state.postValue(GalleryState(images))
     }
 
     data class GalleryState(val images: List<Image>)
