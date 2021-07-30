@@ -6,10 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -18,18 +15,46 @@ class GalleryViewModel: ViewModel() {
 
     val state: MutableLiveData<GalleryState> = MutableLiveData()
 
-    fun getImages() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val client = OkHttpClient().newBuilder().build()
-            val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://api.imgur.com/3/")
-                .client(client)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
+    private val api: ImgurApi
+    private var requestJob: Job? = null
 
-            val api: ImgurApi = retrofit.create(ImgurApi::class.java)
+    init {
+        val client = OkHttpClient().newBuilder().build()
+        val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.imgur.com/3/")
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+
+        api = retrofit.create(ImgurApi::class.java)
+    }
+
+    fun getHotImages() {
+        requestJob?.cancel()
+        requestJob = viewModelScope.launch(Dispatchers.IO) {
+            delay(2000)
             val gallery = api.getHotGallery()
+            Log.d("Tag","$gallery")
+
+            val images = gallery.data.mapNotNull { image ->
+                image.images?.first()?.link
+            }.filter { link ->
+                link.contains(".jpg") || link.contains(".png")
+            }.map { link ->
+                Image(link)
+            }
+
+            state.postValue(GalleryState(images))
+
+        }
+    }
+
+
+    fun getTopImages() {
+        requestJob?.cancel()
+        requestJob = viewModelScope.launch(Dispatchers.IO) {
+            val gallery = api.getTopGallery()
             Log.d("Tag","$gallery")
 
             val images = gallery.data.mapNotNull { image ->

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import io.keepcoding.instagram_clone.databinding.GalleryRowBinding
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
@@ -36,18 +37,12 @@ class GalleryRecyclerAdapter: RecyclerView.Adapter<GalleryViewHolder>() {
 data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewHolder(binding.root) {
 
     fun bind(image: Image) {
-
-        GlobalScope.launch {
-            val bitmap = downloadImage(image)
-            withContext(Dispatchers.Main) {
-                binding.imageView.setImageBitmap(bitmap)
-            }
-           /* GlobalScope.launch(Dispatchers.Main) {
-                binding.imageView.setImageBitmap(bitmap)
-            }*/
+        CoroutineScope(Dispatchers.Main).launch {
+            binding.imageView.setImageBitmap(null)
+            Glide.with(binding.root)
+                .load(image.url)
+                .into(binding.imageView)
         }
-
-        CoroutineScope(Dispatchers.Main).launch {  }
     }
 
     private suspend fun downloadImage(image: Image): Bitmap {
