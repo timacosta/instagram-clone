@@ -12,26 +12,13 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class GalleryViewModel: ViewModel() {
-
+class GalleryViewModel(val api: ImgurApi): ViewModel() {
     val stateMLD: MutableLiveData<GalleryState> = MutableLiveData()
-    val state: LiveData<GalleryState> get() = stateMLD
+    val state: LiveData<GalleryState>
+        get() = stateMLD
 
-
-    private val api: ImgurApi
     private var requestJob: Job? = null
 
-    init {
-        val client = OkHttpClient().newBuilder().build()
-        val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.imgur.com/3/")
-            .client(client)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-
-        api = retrofit.create(ImgurApi::class.java)
-    }
 
     fun getHotImages() {
         requestJob?.cancel()

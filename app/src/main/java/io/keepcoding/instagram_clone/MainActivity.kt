@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.android.di
+import org.kodein.di.direct
 import org.kodein.di.instance
 import retrofit2.Retrofit
 
@@ -16,14 +17,15 @@ import retrofit2.Retrofit
 class MainActivity : AppCompatActivity(), DIAware {
 
     override val di: DI by di()
+    private val viewModel: GalleryViewModel by lazy {
+        ViewModelProvider(this, direct.instance()).get(GalleryViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
-
-        val viewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
 
         val adapter = GalleryRecyclerAdapter()
         binding.galleryRecyclerView.adapter = adapter

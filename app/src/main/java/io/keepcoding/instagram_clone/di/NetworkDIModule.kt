@@ -3,6 +3,7 @@ package io.keepcoding.instagram_clone.di
 import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import io.keepcoding.instagram_clone.ImgurApi
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -12,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 object NetworkDIModule: DIBaseModule("NetworkDIModule") {
-    
+
     override val builder: DI.Builder.() -> Unit = {
         bind<OkHttpClient>() with singleton {
             Log.e("DEBUG", "OkHttpClient")
@@ -32,5 +33,10 @@ object NetworkDIModule: DIBaseModule("NetworkDIModule") {
                 .addConverterFactory(MoshiConverterFactory.create(instance()))
                 .build()
         }
+
+        bind<ImgurApi>() with singleton {
+            instance<Retrofit>().create(ImgurApi::class.java)
+        }
+
     }
 }
