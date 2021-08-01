@@ -1,5 +1,7 @@
 package io.keepcoding.instagram_clone
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +25,10 @@ class MainActivity : AppCompatActivity(), DIAware {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.processIntentData(intent)
+
+
         val binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
@@ -39,6 +45,7 @@ class MainActivity : AppCompatActivity(), DIAware {
             when(menu.itemId) {
                 R.id.menu_hot -> {viewModel.getHotImages()}
                 R.id.menu_top -> {viewModel.getTopImages()}
+                R.id.menu_login -> {oauth2Flow()}
             }
             true
         }
@@ -46,5 +53,14 @@ class MainActivity : AppCompatActivity(), DIAware {
         val client = di.instance<Retrofit>()
         Log.e("DEBUG", client.toString())
 
+    }
+
+    private fun oauth2Flow() {
+        val url = "https://api.imgur.com/oauth2/authorize?client_id=9cffc969562a2f2&response_type=token"
+        Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }.also {
+            startActivity(it)
+        }
     }
 }

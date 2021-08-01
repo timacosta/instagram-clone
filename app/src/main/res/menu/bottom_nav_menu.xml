@@ -10,4 +10,8 @@
         android:title="Top"
         android:icon="@drawable/ic_top"
         android:iconTint="#494848"/>
+    <item
+        android:id="@+id/menu_login"
+        android:title="Login"
+        />
 </menu>

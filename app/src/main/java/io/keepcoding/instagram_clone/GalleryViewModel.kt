@@ -1,5 +1,6 @@
 package io.keepcoding.instagram_clone
 
+import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -41,6 +42,21 @@ class GalleryViewModel(val api: ImgurApi): ViewModel() {
             parseGallery(gallery)
 
         }
+    }
+
+    fun processIntentData(intent: Intent) {
+        val url = intent.data.toString()
+        "imgram://oauth2.+".toRegex().matches(url).alsoIfTrue {
+            val accestoken = "access_token=(\\w+)".toRegex().find(url)!!.groupValues[1]
+            "expires_in=(\\w+)".toRegex().find(url)!!.groupValues[1].toLong() + System.currentTimeMillis()
+            "token_type=(\\w+)".toRegex().find(url)!!.groupValues[1]
+            "refresh_token=(\\w+)".toRegex().find(url)!!.groupValues[1]
+            val accountName = "account_username=(\\w+)".toRegex().find(url)!!.groupValues[1]
+            "account_id=(\\w+)".toRegex().find(url)!!.groupValues[1]
+
+
+    }
+
     }
 
     private fun parseGallery(gallery: Gallery) {
