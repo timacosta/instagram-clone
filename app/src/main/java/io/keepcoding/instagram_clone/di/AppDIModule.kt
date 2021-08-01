@@ -19,9 +19,6 @@ class AppDIModule(private val application: Application): DIBaseModule("AppDIModu
             instance<Application>().getSharedPreferences("instagram", Context.MODE_PRIVATE)
         }
 
-        bind<SessionLocalDataSource>() with singleton {
-            SessionLocalDataSource(instance())
-        }
     }
 
 }

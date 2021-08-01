@@ -1,9 +1,9 @@
-package io.keepcoding.instagram_clone
+package io.keepcoding.instagram_clone.network
 
 data class Gallery(
-   val data: List<Image>,
-   val success: Boolean,
-   val status: Int,
+    val data: List<Image>,
+    val success: Boolean,
+    val status: Int,
 ) {
     data class Image(
         val id: String,

@@ -13,7 +13,7 @@ object ViewModelDIModule: DIBaseModule("ViewModelDIModule") {
             DIViewModelFactory(di)
         }
 
-        bind<GalleryViewModel>() with singleton { GalleryViewModel(instance()) }
+        bind<GalleryViewModel>() with singleton { GalleryViewModel(instance(), instance()) }
     }
 
 

@@ -1,5 +1,6 @@
-package io.keepcoding.instagram_clone
+package io.keepcoding.instagram_clone.network
 
+import io.keepcoding.instagram_clone.network.Gallery
 import retrofit2.http.GET
 import retrofit2.http.Headers
 

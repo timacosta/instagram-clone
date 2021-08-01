@@ -68,5 +68,6 @@ dependencies {
     implementation "org.kodein.di:kodein-di:7.1.0"
     implementation "org.kodein.di:kodein-di-framework-android-x:7.1.0"
 
+    implementation "com.jakewharton.timber:timber:4.7.1"
 
 }

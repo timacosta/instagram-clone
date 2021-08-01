@@ -3,7 +3,9 @@ package io.keepcoding.instagram_clone.di
 import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import io.keepcoding.instagram_clone.ImgurApi
+import io.keepcoding.instagram_clone.network.AuthInterceptor
+import io.keepcoding.instagram_clone.network.ImgurApi
+import io.keepcoding.instagram_clone.network.LoggerInterceptor
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -17,7 +19,11 @@ object NetworkDIModule: DIBaseModule("NetworkDIModule") {
     override val builder: DI.Builder.() -> Unit = {
         bind<OkHttpClient>() with singleton {
             Log.e("DEBUG", "OkHttpClient")
-            OkHttpClient().newBuilder().build()
+            OkHttpClient()
+                .newBuilder()
+                .addInterceptor(LoggerInterceptor())
+                .addInterceptor(AuthInterceptor(instance()))
+                .build()
         }
 
         bind<Moshi>() with singleton {
