@@ -9,16 +9,15 @@ class SessionLocalDataSource(val sharedPreferences: SharedPreferences) {
         sharedPreferences.edit().putString("ACCOUNT NAME", session.accountName).apply()
     }
 
-    fun retrieveSession() {
+    fun retrieveSession(): Session? {
         val accessToken = sharedPreferences.getString("ACCESS TOKEN", null)
         val accountName = sharedPreferences.getString("ACCOUNT NAME", null)
 
-        if(accessToken != null && accountName != null) {
-            Session(
-                accessToken,
-                accountName
-            )
-        }
+        return if(accessToken != null && accountName != null)
+            Session(accessToken, accountName)
+         else
+            null
+
 
 
     }

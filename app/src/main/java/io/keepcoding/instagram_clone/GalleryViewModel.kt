@@ -8,12 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import io.keepcoding.instagram_clone.session.Session
+import io.keepcoding.instagram_clone.session.SessionLocalDataSource
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
-class GalleryViewModel(val api: ImgurApi): ViewModel() {
+class GalleryViewModel(val api: ImgurApi, val localDataSource: SessionLocalDataSource): ViewModel() {
     val stateMLD: MutableLiveData<GalleryState> = MutableLiveData()
     val state: LiveData<GalleryState>
         get() = stateMLD
@@ -53,6 +55,9 @@ class GalleryViewModel(val api: ImgurApi): ViewModel() {
             "refresh_token=(\\w+)".toRegex().find(url)!!.groupValues[1]
             val accountName = "account_username=(\\w+)".toRegex().find(url)!!.groupValues[1]
             "account_id=(\\w+)".toRegex().find(url)!!.groupValues[1]
+
+
+            localDataSource.saveSession(Session(accestoken, accountName))
 
 
     }
