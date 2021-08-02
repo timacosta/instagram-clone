@@ -38,11 +38,21 @@ class GalleryRecyclerAdapter: RecyclerView.Adapter<GalleryViewHolder>() {
 data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewHolder(binding.root) {
 
     fun bind(image: Gallery.Image) {
-        CoroutineScope(Dispatchers.Main).launch {
-            binding.imageView.setImageBitmap(null)
-            Glide.with(binding.root)
+        with(binding) {
+            titleTextView.text = image.title ?: "No title"
+
+            authorTextView.text = image.author ?: "Unknown"
+
+            authorAvatarImageView.setImageBitmap(null)
+            Glide.with(root)
+                .load(image.authorAvatar)
+                .into(authorAvatarImageView)
+
+            imageView.setImageBitmap(null)
+            Glide.with(root)
                 .load(image.url)
-                .into(binding.imageView)
+                .into(imageView)
+
         }
     }
 
