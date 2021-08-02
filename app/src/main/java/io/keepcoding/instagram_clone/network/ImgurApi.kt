@@ -14,4 +14,6 @@ interface ImgurApi {
     @GET("gallery/top")
     suspend fun getTopGallery(): Gallery
 
+    @GET("gallery/me/images")
+    suspend fun getMeGallery(): Gallery
 }

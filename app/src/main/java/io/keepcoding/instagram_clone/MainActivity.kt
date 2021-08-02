@@ -40,6 +40,14 @@ class MainActivity : AppCompatActivity(), DIAware {
         viewModel.state.observe(this) { state ->
             adapter.imageList = state.images
         }
+        viewModel.session.observe(this) { sessionState ->
+            binding.bottomBar.menu.findItem(R.id.menu_login).apply {
+                title = when(sessionState.hasSession) {
+                    true -> sessionState.accountName
+                    false -> "Login"
+                }
+            }
+        }
 
         binding.bottomBar.setOnItemSelectedListener { menu ->
             when(menu.itemId) {
