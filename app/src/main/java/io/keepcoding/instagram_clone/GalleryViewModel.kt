@@ -64,6 +64,15 @@ class GalleryViewModel(
 
     }
 
+
+    fun getMyPics() {
+        requestJob?.cancel()
+        requestJob = viewModelScope.launch(handler) {
+            val myGallery = galleryRepository.getMyGallery()
+            stateMLD.postValue(GalleryState(myGallery.images))
+        }
+    }
+
     fun processIntentData(intent: Intent) {
         val url = intent.data.toString()
         "imgram://oauth2.+".toRegex().matches(url).alsoIfTrue {

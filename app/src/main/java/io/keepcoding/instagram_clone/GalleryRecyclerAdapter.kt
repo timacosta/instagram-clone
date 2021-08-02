@@ -45,7 +45,7 @@ data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewH
 
             authorAvatarImageView.setImageBitmap(null)
             Glide.with(root)
-                .load(image.authorAvatar)
+                .load(image.authorAvatar).also { it.circleCrop() }
                 .into(authorAvatarImageView)
 
             imageView.setImageBitmap(null)

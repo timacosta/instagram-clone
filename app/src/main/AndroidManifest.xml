@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="imgram"
-                    android:host="oauth"/>
+                    android:host="oauth2"/>
             </intent-filter>
         </activity>
     </application>

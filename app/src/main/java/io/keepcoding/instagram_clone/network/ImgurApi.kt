@@ -5,11 +5,11 @@ import retrofit2.http.Headers
 
 
 interface ImgurApi {
-    @Headers("Authorization: Client-ID 9cffc969562a2f2")
+    @Headers("Authorization: Client-ID e0e489a0e367b90")
     @GET("gallery/hot")
     suspend fun getHotGallery(): NetworkGallery
 
-    @Headers("Authorization: Client-ID 9cffc969562a2f2")
+    @Headers("Authorization: Client-ID e0e489a0e367b90")
     @GET("gallery/top")
     suspend fun getTopGallery(): NetworkGallery
 

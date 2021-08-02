@@ -50,13 +50,17 @@ class MainActivity : AppCompatActivity(), DIAware {
                     true -> sessionState.accountName
                     false -> "Login"
                 }
+                isEnabled = !sessionState.hasSession
             }
+
+            binding.bottomBar.menu.findItem(R.id.menu_my_pics).isVisible = sessionState.hasSession
         }
 
         binding.bottomBar.setOnItemSelectedListener { menu ->
             when(menu.itemId) {
-                R.id.menu_hot -> {viewModel.getHotImages()}
-                R.id.menu_top -> {viewModel.getTopImages()}
+                R.id.menu_hot -> viewModel.getHotImages()
+                R.id.menu_top -> viewModel.getTopImages()
+                R.id.menu_my_pics -> viewModel.getMyPics()
                 R.id.menu_login -> {oauth2Flow()}
             }
             true
@@ -68,7 +72,7 @@ class MainActivity : AppCompatActivity(), DIAware {
     }
 
     private fun oauth2Flow() {
-        val url = "https://api.imgur.com/oauth2/authorize?client_id=9cffc969562a2f2&response_type=token"
+        val url = "https://api.imgur.com/oauth2/authorize?client_id=e0e489a0e367b90&response_type=token"
         Intent(Intent.ACTION_VIEW).apply {
             data = Uri.parse(url)
         }.also {

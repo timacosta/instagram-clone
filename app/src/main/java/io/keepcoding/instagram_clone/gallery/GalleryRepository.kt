@@ -6,5 +6,6 @@ interface GalleryRepository {
 
     suspend fun getTopGallery(): Gallery
 
+    suspend fun getMyGallery(): Gallery
 
 }

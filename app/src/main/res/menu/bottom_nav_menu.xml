@@ -11,7 +11,14 @@
         android:icon="@drawable/ic_top"
         android:iconTint="#494848"/>
     <item
+        android:id="@+id/menu_my_pics"
+        android:title="My Pics"
+        android:icon="@drawable/ic_my_pics"
+        android:iconTint="#494848" />
+    <item
         android:id="@+id/menu_login"
         android:title="Login"
+        android:icon="@drawable/ic_login"
+        android:iconTint="#494848"
         />
 </menu>

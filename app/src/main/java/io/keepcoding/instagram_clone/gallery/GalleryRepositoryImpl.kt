@@ -19,6 +19,12 @@ class GalleryRepositoryImpl(private val imgurApi: ImgurApi): GalleryRepository {
             imgurApi.getTopGallery().toDomain()
         }
 
+    override suspend fun getMyGallery(): Gallery =
+        withContext(Dispatchers.IO) {
+            imgurApi.getMeGallery().toDomain()
+        }
+
+
 
     private fun NetworkGallery.toDomain(): Gallery {
         val images = data.filter { image ->
