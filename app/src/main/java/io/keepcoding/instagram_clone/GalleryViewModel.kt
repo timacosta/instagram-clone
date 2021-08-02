@@ -6,10 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.keepcoding.instagram_clone.network.Gallery
+import io.keepcoding.instagram_clone.gallery.Gallery
+import io.keepcoding.instagram_clone.gallery.GalleryRepository
+import io.keepcoding.instagram_clone.gallery.GalleryRepositoryImpl
+import io.keepcoding.instagram_clone.network.NetworkGallery
 import io.keepcoding.instagram_clone.network.ImgurApi
 import io.keepcoding.instagram_clone.session.Session
-import io.keepcoding.instagram_clone.session.SessionLocalDataSource
 import io.keepcoding.instagram_clone.session.SessionRepository
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -17,7 +19,7 @@ import java.lang.Exception
 import kotlin.random.Random
 
 class GalleryViewModel(
-    private val api: ImgurApi,
+    private val galleryRepository: GalleryRepository,
     private val sessionRepository: SessionRepository
 ) : ViewModel() {
 
@@ -32,6 +34,7 @@ class GalleryViewModel(
     private var requestJob: Job? = null
     private val handler = CoroutineExceptionHandler { couroutineContext, throwable ->
         Timber.e(throwable)
+        stateMLD.postValue(GalleryState(emptyList(), true))
     }
 
     init {
@@ -45,25 +48,18 @@ class GalleryViewModel(
 
     fun getHotImages() {
         requestJob?.cancel()
-        requestJob = viewModelScope.launch(Dispatchers.IO+handler) {
-            try {
-                val gallery = api.getHotGallery()
-                parseGallery(gallery)
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
+        requestJob = viewModelScope.launch(handler) {
+            val gallery = galleryRepository.getHotGallery()
+            stateMLD.postValue(GalleryState(gallery.images))
         }
     }
 
 
     fun getTopImages() {
         requestJob?.cancel()
-        requestJob = viewModelScope.launch(Dispatchers.IO+handler) {
-            val gallery = api.getTopGallery()
-            Log.d("Tag", "$gallery")
-
-            parseGallery(gallery)
-
+        requestJob = viewModelScope.launch(handler) {
+            val gallery = galleryRepository.getTopGallery()
+            stateMLD.postValue(GalleryState(gallery.images))
         }
 
     }
@@ -87,17 +83,7 @@ class GalleryViewModel(
         }
     }
 
-    private fun parseGallery(gallery: Gallery) {
-        val images = gallery.data.mapNotNull { image ->
-            image.images?.first()?.link
-        }.filter { link ->
-            link.contains(".jpg") || link.contains(".png")
-        }.map { link ->
-            Image(link)
-        }
 
-        stateMLD.postValue(GalleryState(images))
-    }
 
     suspend fun makeRequest(): String {
         Timber.tag("CCC").d("Start")
@@ -106,6 +92,6 @@ class GalleryViewModel(
         return "${Random.nextLong(1000)}"
     }
 
-    data class GalleryState(val images: List<Image>)
+    data class GalleryState(val images: List<Gallery.Image>, val hasError: Boolean = false)
     data class SessionState(val hasSession: Boolean, val accountName: String?)
 }

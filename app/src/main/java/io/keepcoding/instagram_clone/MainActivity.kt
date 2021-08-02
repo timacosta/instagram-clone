@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import io.keepcoding.instagram_clone.databinding.ActivityMainBinding
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
@@ -39,6 +40,9 @@ class MainActivity : AppCompatActivity(), DIAware {
         viewModel.getHotImages()
         viewModel.state.observe(this) { state ->
             adapter.imageList = state.images
+            if(state.hasError) {
+                Snackbar.make(binding.root,"Error", 5000).show()
+            }
         }
         viewModel.session.observe(this) { sessionState ->
             binding.bottomBar.menu.findItem(R.id.menu_login).apply {

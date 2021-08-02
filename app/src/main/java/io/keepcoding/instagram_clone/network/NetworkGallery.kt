@@ -1,15 +1,15 @@
 package io.keepcoding.instagram_clone.network
 
-data class Gallery(
-    val data: List<Image>,
+data class NetworkGallery(
+    val data: List<NetworkImage>,
     val success: Boolean,
     val status: Int,
 ) {
-    data class Image(
+    data class NetworkImage(
         val id: String,
         val title: String?,
         val description: String?,
-        val datetime: Int,
+        val datetime: Long,
         val cover: String?,
         val cover_width: Int?,
         val cover_height: Int?,
@@ -29,7 +29,7 @@ data class Gallery(
         val in_gallery: Boolean,
         val tags: List<Tag>,
         val in_most_viral: Boolean,
-        val images: List<Image>?,
+        val images: List<NetworkImage>?,
         val type: String?,
         val animated: Boolean?,
         val width: Int?,

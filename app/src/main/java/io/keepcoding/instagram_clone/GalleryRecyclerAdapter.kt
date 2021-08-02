@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import io.keepcoding.instagram_clone.databinding.GalleryRowBinding
+import io.keepcoding.instagram_clone.gallery.Gallery
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -15,7 +16,7 @@ import okhttp3.Response
 
 class GalleryRecyclerAdapter: RecyclerView.Adapter<GalleryViewHolder>() {
 
-    var imageList : List<Image> = emptyList()
+    var imageList : List<Gallery.Image> = emptyList()
     set(value) {
         field = value
         notifyDataSetChanged()
@@ -26,7 +27,7 @@ class GalleryRecyclerAdapter: RecyclerView.Adapter<GalleryViewHolder>() {
             .run { GalleryViewHolder(this) }
 
     override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
-        val image: Image = imageList[position]
+        val image: Gallery.Image = imageList[position]
         holder.bind(image)
     }
 
@@ -36,7 +37,7 @@ class GalleryRecyclerAdapter: RecyclerView.Adapter<GalleryViewHolder>() {
 
 data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(image: Image) {
+    fun bind(image: Gallery.Image) {
         CoroutineScope(Dispatchers.Main).launch {
             binding.imageView.setImageBitmap(null)
             Glide.with(binding.root)
@@ -45,7 +46,7 @@ data class GalleryViewHolder(val binding: GalleryRowBinding): RecyclerView.ViewH
         }
     }
 
-    private suspend fun downloadImage(image: Image): Bitmap {
+    private suspend fun downloadImage(image: Gallery.Image): Bitmap {
         return withContext(Dispatchers.IO) {
             val okHttpClient = OkHttpClient()
             val request: Request = Request.Builder().url(image.url).build()
