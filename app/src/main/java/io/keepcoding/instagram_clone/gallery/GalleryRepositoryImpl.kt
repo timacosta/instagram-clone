@@ -24,19 +24,16 @@ class GalleryRepositoryImpl(private val imgurApi: ImgurApi): GalleryRepository {
             imgurApi.getMeGallery().toDomain()
         }
 
-
-
     private fun NetworkGallery.toDomain(): Gallery {
         val images = data.filter { image ->
-            val firstImage = image.images?.first()
-                    firstImage?.link?.contains(".jpg") == true ||
-                    firstImage?.link?.contains(".png") == true
+            val imageLink = image.images?.first()?.link ?: image.link
+            imageLink?.contains(".jpg") || imageLink?.contains(".png")
         }.mapNotNull { image ->
-            val firstImage = image.images?.first() ?: return@mapNotNull null
+            val imageLink = image.images?.first()?.link ?: image.link
             Image(
                 id = image.id,
                 title = image.title,
-                url = firstImage.link,
+                url = imageLink,
                 likes = image.favorite_count ?: 0,
                 datetime = image.datetime,
                 author = image.account_url

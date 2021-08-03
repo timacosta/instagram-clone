@@ -6,8 +6,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import io.keepcoding.instagram_clone.databinding.ActivityMainBinding
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import okhttp3.OkHttpClient
 import org.kodein.di.DI
 import org.kodein.di.DIAware
@@ -29,7 +33,6 @@ class MainActivity : AppCompatActivity(), DIAware {
 
         viewModel.processIntentData(intent)
 
-
         val binding = ActivityMainBinding.inflate(layoutInflater).also {
             setContentView(it.root)
         }
@@ -38,23 +41,31 @@ class MainActivity : AppCompatActivity(), DIAware {
         binding.galleryRecyclerView.adapter = adapter
 
         viewModel.getHotImages()
-        viewModel.state.observe(this) { state ->
-            adapter.imageList = state.images
-            if(state.hasError) {
-                Snackbar.make(binding.root,"Error", 5000).show()
-            }
-        }
-        viewModel.session.observe(this) { sessionState ->
-            binding.bottomBar.menu.findItem(R.id.menu_login).apply {
-                title = when(sessionState.hasSession) {
-                    true -> sessionState.accountName
-                    false -> "Login"
-                }
-                isEnabled = !sessionState.hasSession
-            }
 
-            binding.bottomBar.menu.findItem(R.id.menu_my_pics).isVisible = sessionState.hasSession
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.state.collect { state ->
+                adapter.imageList = state.images
+                if(state.hasError) {
+                    Snackbar.make(binding.root,"Error", 5000).show()
+                }
+            }
         }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.session.collect { sessionState ->
+                binding.bottomBar.menu.findItem(R.id.menu_login).apply {
+                    title = when(sessionState.hasSession) {
+                        true -> sessionState.accountName
+                        false -> "Login"
+                    }
+                    isEnabled = !sessionState.hasSession
+                }
+
+                binding.bottomBar.menu.findItem(R.id.menu_my_pics).isVisible = sessionState.hasSession
+            }
+        }
+
 
         binding.bottomBar.setOnItemSelectedListener { menu ->
             when(menu.itemId) {
@@ -65,9 +76,6 @@ class MainActivity : AppCompatActivity(), DIAware {
             }
             true
         }
-
-        val client = di.instance<Retrofit>()
-        Log.e("DEBUG", client.toString())
 
     }
 

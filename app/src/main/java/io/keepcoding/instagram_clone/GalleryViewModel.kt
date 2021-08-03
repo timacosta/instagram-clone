@@ -1,21 +1,16 @@
 package io.keepcoding.instagram_clone
 
 import android.content.Intent
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.keepcoding.instagram_clone.gallery.Gallery
 import io.keepcoding.instagram_clone.gallery.GalleryRepository
-import io.keepcoding.instagram_clone.gallery.GalleryRepositoryImpl
-import io.keepcoding.instagram_clone.network.NetworkGallery
-import io.keepcoding.instagram_clone.network.ImgurApi
 import io.keepcoding.instagram_clone.session.Session
 import io.keepcoding.instagram_clone.session.SessionRepository
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
-import java.lang.Exception
 import kotlin.random.Random
 
 class GalleryViewModel(
@@ -23,23 +18,23 @@ class GalleryViewModel(
     private val sessionRepository: SessionRepository
 ) : ViewModel() {
 
-    val stateMLD: MutableLiveData<GalleryState> = MutableLiveData()
-    val state: LiveData<GalleryState>
-        get() = stateMLD
+    private val stateFlow: MutableStateFlow<GalleryState> = MutableStateFlow(GalleryState.empty())
+    val state: StateFlow<GalleryState>
+        get() = stateFlow
 
-    val sessionMLD: MutableLiveData<SessionState> = MutableLiveData()
-    val session: LiveData<SessionState>
+    private val sessionMLD: MutableStateFlow<SessionState> = MutableStateFlow(SessionState.empty())
+    val session: StateFlow<SessionState>
         get() = sessionMLD
 
     private var requestJob: Job? = null
     private val handler = CoroutineExceptionHandler { couroutineContext, throwable ->
         Timber.e(throwable)
-        stateMLD.postValue(GalleryState(emptyList(), true))
+        stateFlow.value = (GalleryState(emptyList(), true))
     }
 
     init {
         sessionRepository.getSession().let { session ->
-            sessionMLD.postValue(
+            sessionMLD.value = (
                 SessionState(session != null, session?.accountName)
             )
         }
@@ -50,7 +45,7 @@ class GalleryViewModel(
         requestJob?.cancel()
         requestJob = viewModelScope.launch(handler) {
             val gallery = galleryRepository.getHotGallery()
-            stateMLD.postValue(GalleryState(gallery.images))
+            stateFlow.value = (GalleryState(gallery.images))
         }
     }
 
@@ -59,7 +54,7 @@ class GalleryViewModel(
         requestJob?.cancel()
         requestJob = viewModelScope.launch(handler) {
             val gallery = galleryRepository.getTopGallery()
-            stateMLD.postValue(GalleryState(gallery.images))
+            stateFlow.value = (GalleryState(gallery.images))
         }
 
     }
@@ -69,7 +64,7 @@ class GalleryViewModel(
         requestJob?.cancel()
         requestJob = viewModelScope.launch(handler) {
             val myGallery = galleryRepository.getMyGallery()
-            stateMLD.postValue(GalleryState(myGallery.images))
+            stateFlow.value = (GalleryState(myGallery.images))
         }
     }
 
@@ -87,7 +82,7 @@ class GalleryViewModel(
             Session(accestoken, accountName).also { session ->
                 sessionRepository.saveSession(session)
             }.also { session ->
-                sessionMLD.postValue(SessionState(true, session.accountName))
+                sessionMLD.value = (SessionState(true, session.accountName))
             }
         }
     }
@@ -101,6 +96,14 @@ class GalleryViewModel(
         return "${Random.nextLong(1000)}"
     }
 
-    data class GalleryState(val images: List<Gallery.Image>, val hasError: Boolean = false)
-    data class SessionState(val hasSession: Boolean, val accountName: String?)
+    data class GalleryState(val images: List<Gallery.Image>, val hasError: Boolean = false) {
+        companion object {
+            fun empty() = GalleryState(emptyList(), false)
+        }
+    }
+    data class SessionState(val hasSession: Boolean, val accountName: String?) {
+        companion object {
+            fun empty() = SessionState(false, null)
+        }
+    }
 }
