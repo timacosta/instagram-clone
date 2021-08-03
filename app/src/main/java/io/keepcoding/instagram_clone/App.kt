@@ -13,6 +13,7 @@ class App: Application(), DIAware {
         import(ViewModelDIModule.create())
         import(SessionDIModule.create())
         import(GalleryDIModule.create())
+        import(RoomDIModule.create())
     }
 
     override fun onCreate() {
